@@ -1,10 +1,10 @@
 import scrapy
-from scrapy.shell import inspect_response
+from ArticleInfo import ArticleInfo
 
 
 class AgrpSpider(scrapy.Spider):
     name = 'AgrpSpider'
-    start_urls = ['https://www.idnes.cz/', 'https://www.sport.cz/', 'https://www.novinky.cz/']
+    start_urls = ['https://www.novinky.cz/']
 
     def parse(self, response):
         urls = []
@@ -15,10 +15,21 @@ class AgrpSpider(scrapy.Spider):
             urls.append(url.extract())
         for url in response.css('div.f_bH>a.d_aB ::attr(href)'):
             recentUrls.append(url.extract())
-        for title in response.css('.d_w.d_z.f_aV::text'):
+        for title in response.css('h3.d_w.d_z.f_aV ::text'):
             titles.append(title.get())
-        for title in response.css('d_w.d_z.f_bT::text'):
+        for title in response.css('h3.d_w.d_z.f_bT ::text'):
             recentTitles.append(title.get())
+
+        articles = []
+        for i in range(len(urls)):
+            articles.append(ArticleInfo(urls[i], titles[i], "", "", ""))
+
+        for i in range(len(recentUrls)):
+            articles.append(ArticleInfo(recentUrls[i], recentTitles[i], "", "", ""))
+
+        f = open("C:/test.txt", "w", encoding="utf-8")
+        for articleInfo in articles:
+            f.write(str(articleInfo))
 
         f = open("C:/urls.txt", "w")
 
@@ -32,10 +43,16 @@ class AgrpSpider(scrapy.Spider):
             f.write(url + "\n")
         f.close()
 
-        f = open("C:/titles.txt", "w")
+        f = open("C:/titles.txt", "w", encoding="utf-8")
 
         for title in titles:
-            f.write(title)
+            f.write(title + "\n")
+        f.close()
+
+        f = open("C:/titles1.txt", "w", encoding="utf-8")
+
+        for title in recentTitles:
+            f.write(title + "\n")
         f.close()
 
         #for next_page in response.css('a.next-posts-link'):
