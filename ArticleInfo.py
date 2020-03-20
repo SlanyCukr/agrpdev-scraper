@@ -8,9 +8,7 @@ class ArticleInfo:
         self.paragraphs = paragraphs
 
     def extractCategoryFromLink(self):
-        ;
-
-
+        pass
 
     def __str__(self):
         return f'Link: {self.link}, Header: {self.header}, Category: {self.category}, Author: {self.author}, Published: {self.published_at}, Paragraphs: {self.paragraphs}\n'
