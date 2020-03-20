@@ -1,14 +1,15 @@
 class ArticleInfo:
-    def __init__(self, link, header, author, published_at, paragraphs):
+    def __init__(self, link, header, description, category, author, published_at, modified_at, paragraphs):
         self.link = link
         self.header = header
-        self.category = "" # TODO: extract from link
+        self.description = description
+        self.category = category
         self.author = author
         self.published_at = published_at
+        self.modified_at = modified_at
         self.paragraphs = paragraphs
 
-    def extractCategoryFromLink(self):
-        pass
-
     def __str__(self):
-        return f'Link: {self.link}, Header: {self.header}, Category: {self.category}, Author: {self.author}, Published: {self.published_at}, Paragraphs: {self.paragraphs}\n'
+        return f'Link: {self.link}\nHeader:{self.header}\nDescription: {self.description}\nCategory: {self.category}\n' \
+               f'Author: {self.author}\nPublished: {self.published_at}\nModified_at: {self.modified_at}' \
+               f'\nParagraphs count: {len(self.paragraphs)}\n'
