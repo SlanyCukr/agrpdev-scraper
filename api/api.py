@@ -34,7 +34,7 @@ def grab_longest_words():
 
     # finds all words in all paragraphs and sorts them based on their length
     unsorted_words = list(dict.fromkeys(find_words(articles)))
-    sorted_words = sorted(unsorted_words, key=len, reverse=True)
+    sorted_words = sorted(unsorted_words, key=len)
 
     return jsonify(sorted_words[-words_count:])
 
