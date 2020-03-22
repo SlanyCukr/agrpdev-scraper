@@ -1,5 +1,5 @@
 class ArticleInfo:
-    def __init__(self, link, header, description, category, author, published_at, modified_at, paragraphs):
+    def __init__(self, link, header="", description="", category="", author="", published_at="", modified_at="", paragraphs=""):
         self.link = link
         self.header = header
         self.description = description
@@ -8,6 +8,11 @@ class ArticleInfo:
         self.published_at = published_at
         self.modified_at = modified_at
         self.paragraphs = paragraphs
+
+    def is_populated(self):
+        if not self.header:
+            return False
+        return True
 
     def __str__(self):
         return f'Link: {self.link}\nHeader:{self.header}\nDescription: {self.description}\nCategory: {self.category}\n' \
