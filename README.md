@@ -2,6 +2,7 @@
 This repository contains functioning scrapper - created using Scrapy package and Flask API.
 ### Installation
 ```shell
+git clone https://github.com/SlanyCukr/agrpdev-scrapper.git
 pip3 install -r requirements.txt
 ```
 ### Running scrapper
