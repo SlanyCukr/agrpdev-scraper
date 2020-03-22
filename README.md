@@ -1,6 +1,6 @@
 ## Agrpdev-scrapper
 This repository contains functioning scrapper - created using Scrapy package and Flask API.
-### Instalation
+### Installation
 ```shell
 pip3 install -r requirements.txt
 ```
