@@ -1,16 +1,21 @@
 import json
 from datetime import datetime
 
-from ArticleInfo import ArticleInfo
-
+from classes.ArticleInfo import ArticleInfo
 from utils.utils import can_add_url
 
 
 def parse_article_id_url(response, url_limit):
+    """
+    Finds url on novinky.cz with article_id, that satisfies url_limit condition
+    :param response: Scrapy response
+    :param url_limit:
+    :return: URL as str
+    """
     # finds first link to article, splits it into subarrays by '-' and takes last element => id of the article
     first_article_id = response.css('div[data-dot="top_clanky"] a::attr(href)')[0].extract().split('-')[-1]
 
-    # calculate article id in the paspt - substract (url_limit - 4) => 4,
+    # calculate article id in the past -> substract (url_limit - 4) why number 4 ?
     # because first 4 articles are not present in the stalo_se timeline
     needed_article_id = int(first_article_id) - abs((int(url_limit) - 4))
 
@@ -18,6 +23,13 @@ def parse_article_id_url(response, url_limit):
 
 
 def parse_all_urls(response, articles, url_limit):
+    """
+    Populates article list with URLs pointing to articles
+    :param response: Scrapy response
+    :param articles: Articles list
+    :param url_limit:
+    :return: None
+    """
     # load urls from section "top_clanky", and from "stalo-se"
     for url in response.css('div[data-dot="top_clanky"] a::attr(href)'):
         if can_add_url(articles, url_limit, url.extract()):
@@ -68,7 +80,7 @@ def parse_additional_data(response):
 
     # load all paragraphs and filter out ones, that are too short
     paragraphs = response.css('div[data-dot-data=\'{"component":"article-content"}\'] p::text').getall()
-    article.paragraphs = list(filter(lambda x: len(x) >= 10, paragraphs))
+    article.paragraphs = list(filter(lambda x: len(x) >= 70, paragraphs))
 
 
 def retrieve_author(response):
@@ -77,12 +89,12 @@ def retrieve_author(response):
     :param response: Scrapy response
     :return: Author as str
     """
-    author = response.css('div[data-dot-data=\'{"click":"author"}\']::text').get(default="") + " "
+    author = response.css('div[data-dot-data=\'{"click":"author"}\']::text').get(default="")
     author_links = response.css('div[data-dot-data=\'{"click":"author"}\'] a::text').getall()
 
     # no space is needed for author_links
-    if len(author_links) == 0:
-        author = author[:-1]
+    if len(author_links) != 0 and author:
+        author = author + " "
 
     # if there is extra ',' char, remove it
     if ',' in author:

@@ -2,6 +2,7 @@ import scrapy
 import time
 
 from utils.parsers import parse_article_id_url, parse_all_urls, parse_additional_data
+from utils.database import insert_articles
 
 
 class AgrpSpider(scrapy.Spider):
@@ -23,6 +24,8 @@ class AgrpSpider(scrapy.Spider):
             if not article.is_populated():
                 self.logger.error(f"Article with link {article.link} is not populated. It can't be resolved here.")
             self.logger.info(str(article))
+
+        insert_articles(self.articles)
 
     def parse(self, response):
         """

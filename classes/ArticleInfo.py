@@ -18,3 +18,8 @@ class ArticleInfo:
         return f'Link: {self.link}\nHeader:{self.header}\nDescription: {self.description}\nCategory: {self.category}\n' \
                f'Author: {self.author}\nPublished: {self.published_at}\nModified_at: {self.modified_at}' \
                f'\nParagraphs count: {len(self.paragraphs)}\n'
+
+    def as_dict(self):
+        return {'Link': self.link, 'Header': self.header, 'Description': self.description, 'Category': self.category,
+                'Author': self.author, 'Published_at': self.published_at, 'Modified_at': self.modified_at,
+                'Paragraphs': self.paragraphs, 'Paragraphs_count': len(self.paragraphs)}
