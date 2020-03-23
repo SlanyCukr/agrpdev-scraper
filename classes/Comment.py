@@ -1,5 +1,5 @@
 class Comment:
-    def __init__(self, author_text, text, likes, dislikes, time):
+    def __init__(self, author_text=",", text="", likes="+0", dislikes="-0", time=""):
         splitted_author_text = author_text.split(',')
 
         self.author = splitted_author_text[0]

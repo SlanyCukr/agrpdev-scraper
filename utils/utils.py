@@ -28,6 +28,17 @@ def find_words(articles):
     return words
 
 
+def find_comments(articles):
+    """
+    Finds all comments in all articles
+    :return: list of all comments
+    """
+    comments = []
+    for article in articles:
+        comments.extend(article.comments)
+    return comments
+
+
 def retrieve_all_articles():
     """
     Retrieves all articles and converts them to ArticleInfo objects in list

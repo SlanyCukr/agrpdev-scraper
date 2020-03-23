@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 
 
-from utils.database import retrieve_articles, retrieve_newest_articles
-from utils.utils import find_words, retrieve_all_articles
+from utils.database import retrieve_newest_articles
+from utils.utils import find_words, retrieve_all_articles, find_comments
+from classes.Comment import Comment
 
 app = Flask(__name__)
 
@@ -90,3 +91,14 @@ def covid_analysis():
     return_string = return_string[:-2]
     return_string += "<br/>Percentage of occurence: <b>" + str(round(covid_count / article_count, 4) * 100) + "</b> %."
     return return_string
+
+
+@app.route('/grab_best_comments', methods=['GET'])
+def grab_best_comments():
+    comment_count = int(request.args.get("len"))
+    articles = retrieve_all_articles()
+
+    comments = find_comments(articles)
+    sorted_comments = sorted(comments, key=lambda obj: obj.ratio, reverse=True)
+
+    return jsonify(Comment.as_dicts(sorted_comments[:comment_count]))

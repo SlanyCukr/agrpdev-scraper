@@ -5,7 +5,7 @@ from classes.Comment import Comment
 
 
 class ArticleInfo:
-    def __init__(self, link, header="", description="", category="", author="", published_at="", modified_at="", paragraphs="", comments=""):
+    def __init__(self, link, header="", description="", category="", author="", published_at="", modified_at="", paragraphs="", comments=None):
         self.link = link
         self.header = header
         self.description = description
@@ -55,7 +55,18 @@ class ArticleInfo:
         articles = []
 
         for db_object in db_objects:
+            comments = []
+            for comment in json.loads(db_object["Comments"]):
+                comment_object = Comment()
+                comment_object.author = comment["Author"]
+                comment_object.city = comment["City"]
+                comment_object.text = comment["Text"]
+                comment_object.likes = comment["Likes"]
+                comment_object.dislikes = comment["Dislikes"]
+                comment_object.ratio = float(comment["Ratio"])
+                comment_object.time = comment["Time"]
+                comments.append(comment_object)
             articles.append(ArticleInfo(db_object["Link"], db_object["Header"], db_object["Description"],
                                         db_object["Category"], db_object["Author"], db_object["Published_at"],
-                                        db_object["Modified_at"], db_object["Paragraphs"]))
+                                        db_object["Modified_at"], db_object["Paragraphs"], comments))
         return articles
