@@ -15,7 +15,7 @@ app.config['JSON_AS_ASCII'] = False
 def home():
     endpoints = "<h3 align='center'>All endpoints</h3><br/><a href='http://slanycukr.hopto.org:5000/covid_analysis'>Covid_analysis</a><br/>" \
                      "<a href='http://slanycukr.hopto.org:5000/grab_newest_articles?len=3'>Grab_newest_articles</a> (3 articles)<br/>" \
-                     "<a href='http://slanycukr.hopto.org:5000/grab_longest_words?len=3'>Grab_longest_words</a> (ignore words, that are 3 or less characters long)<br/>" \
+                     "<a href='http://slanycukr.hopto.org:5000/grab_longest_words?len=8'>Grab_longest_words</a> (8 longest words)<br/>" \
                      "<a href='http://slanycukr.hopto.org:5000/grab_most_common_words?len=8&word_len=5'>Grab_most_common_words</a> (8 words, ignore words, that are 5 or less characters long)<br/>" \
                      "<a href='http://slanycukr.hopto.org:5000/grab_best_comments?len=5'>Grab_best_comments</a> (5 comments)<br/>"
     return endpoints
@@ -23,14 +23,18 @@ def home():
 
 @app.route('/grab_newest_articles', methods=['GET'])
 def grab_newest_articles():
-    articles_count = int(request.args.get("len"))
+    articles_count = 3
+    if 'len' in request.args:
+        articles_count = int(request.args.get("len"))
 
     return jsonify(retrieve_newest_articles(articles_count))
 
 
 @app.route('/grab_longest_words', methods=['GET'])
 def grab_longest_words():
-    words_count = int(request.args.get("len"))
+    words_count = 8
+    if 'len' in request.args:
+        words_count = int(request.args.get("len"))
 
     articles = retrieve_all_articles()
 
@@ -43,8 +47,13 @@ def grab_longest_words():
 
 @app.route('/grab_most_common_words', methods=['GET'])
 def grab_most_common_words():
-    words_count = int(request.args.get("len"))
-    word_len = int(request.args.get("word_len"))
+    words_count = 8
+    if 'len' in request.args:
+        words_count = int(request.args.get("len"))
+
+    word_len = 5
+    if 'word_len' in request.args   :
+        word_len = int(request.args.get("word_len"))
 
     articles = retrieve_all_articles()
 
@@ -96,8 +105,10 @@ def covid_analysis():
 
 @app.route('/grab_best_comments', methods=['GET'])
 def grab_best_comments():
-    # retrieves all articles, loads number of comments into variable
-    comment_count = int(request.args.get("len"))
+    comment_count = 5
+    if 'len' in request.args:
+        comment_count = int(request.args.get("len"))
+
     articles = retrieve_all_articles()
 
     # finds all comments and sorts them

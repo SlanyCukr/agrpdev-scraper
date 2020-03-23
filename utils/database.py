@@ -35,5 +35,4 @@ def retrieve_newest_articles(articles_count):
     :param articles_count: number of articles to be returned, 0 means all
     :return: Articles as list of dict
     """
-    col.sort({"Published_at": 1})
-    return list(col.find(col.find(projection={"_id": 0}), limit=articles_count))
+    return list(col.find(projection={"_id": 0}, limit=articles_count).sort("Published_at", -1))
