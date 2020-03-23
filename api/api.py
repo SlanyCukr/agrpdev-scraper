@@ -16,7 +16,8 @@ def home():
     endpoints = "<h3 align='center'>All endpoints</h3><br/><a href='http://slanycukr.hopto.org:5000/covid_analysis'>Covid_analysis</a><br/>" \
                      "<a href='http://slanycukr.hopto.org:5000/grab_newest_articles?len=3'>Grab_newest_articles</a> (3 articles)<br/>" \
                      "<a href='http://slanycukr.hopto.org:5000/grab_longest_words?len=3'>Grab_longest_words</a> (ignore words, that are 3 or less characters long)<br/>" \
-                     "<a href='http://slanycukr.hopto.org:5000/grab_most_common_words?len=8&word_len=5'>Grab_most_common_words</a> (8 words, ignore words, that are 5 or less characters long)<br/>"
+                     "<a href='http://slanycukr.hopto.org:5000/grab_most_common_words?len=8&word_len=5'>Grab_most_common_words</a> (8 words, ignore words, that are 5 or less characters long)<br/>" \
+                     "<a href='http://slanycukr.hopto.org:5000/grab_best_comments?len=5'>Grab_best_comments</a> (5 comments)<br/>"
     return endpoints
 
 
@@ -95,9 +96,11 @@ def covid_analysis():
 
 @app.route('/grab_best_comments', methods=['GET'])
 def grab_best_comments():
+    # retrieves all articles, loads number of comments into variable
     comment_count = int(request.args.get("len"))
     articles = retrieve_all_articles()
 
+    # finds all comments and sorts them
     comments = find_comments(articles)
     sorted_comments = sorted(comments, key=lambda obj: obj.ratio, reverse=True)
 
