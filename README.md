@@ -5,9 +5,9 @@ This repository contains functioning scraper - created using Scrapy package and 
 git clone https://github.com/SlanyCukr/agrpdev-scraper.git
 pip3 install -r requirements.txt
 ```
-### Running scrapper
+### Running scraper
 ```shell
-scrapy runspider scrapper.py
+scrapy runspider scraper.py
 ```
 ##### Optional arguments  
 ```shell
@@ -26,4 +26,4 @@ python3 -m flask run api.py --host=0.0.0.0
 ```
 #### Windows: [use Pycharm](https://www.jetbrains.com/help/pycharm/creating-flask-project.html)
 
-**API is live on ** [this server](http://slanycukr.hopto.org:5000/ "this server")
+**API is live on** [this server](http://slanycukr.hopto.org:5000/ "this server")
