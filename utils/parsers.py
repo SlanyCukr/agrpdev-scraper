@@ -3,6 +3,7 @@ from datetime import datetime
 
 from classes.ArticleInfo import ArticleInfo
 from utils.utils import can_add_url
+from classes.Comment import Comment
 
 
 def parse_article_id_url(response, url_limit):
@@ -64,14 +65,12 @@ def parse_additional_data(response):
         if list_element["position"] == 2:
             article.category = list_element["name"]
 
-    article.published_at = datetime.strptime(second_script_json["datePublished"], '%Y-%m-%dT%H:%M:%S.%fZ').strftime(
-        "%Y-%m-%d %H:%M:%S")
-    article.modified_at = datetime.strptime(second_script_json["dateModified"], '%Y-%m-%dT%H:%M:%S.%fZ').strftime(
-        "%Y-%m-%d %H:%M:%S")
+    article.published_at = datetime.strptime(second_script_json["datePublished"], '%Y-%m-%dT%H:%M:%S.%fZ')
+    article.modified_at = datetime.strptime(second_script_json["dateModified"], '%Y-%m-%dT%H:%M:%S.%fZ')
 
     # limit articles by date, this is stronger than limit by url_limit
     if date_limit:
-        if article.published_at <= datetime.strptime(date_limit, "%Y-%m-%d").strftime("%Y-%m-%d %H:%M:%S"):
+        if article.published_at <= datetime.strptime(date_limit, "%Y-%m-%d"):
             articles.remove(article)
             return
 
@@ -106,3 +105,26 @@ def retrieve_author(response):
     author = author[:-1]
 
     return author
+
+
+def parse_comments(response):
+    """
+    Retrieves comments from article
+    :param response: Scrapy response
+    :return: Comments as list of Comment objects
+    """
+    article = response.meta.get("article_object")
+
+    comments = []
+
+    # parses all info about comments from comments page (xpath needed here to better access to elements)
+    author_texts = response.xpath("//a[@data-dot='souhlasim']/../../div/div/div/text()").getall()
+    texts = response.xpath("//a[@data-dot='souhlasim']/../../../../div/div/text()").getall()
+    likes = response.xpath("//a[@data-dot='souhlasim']/span/text()").getall()
+    dislikes = response.xpath("//a[@data-dot='nesouhlasim']/span/text()").getall()
+    times = response.xpath("//a[@data-dot='souhlasim']/../../div/div/div/span/text()").getall()
+
+    for i in range(len(likes)):
+        comments.append(Comment(author_texts[i], texts[i], likes[i], dislikes[i], times[i]))
+
+    article.comments = comments

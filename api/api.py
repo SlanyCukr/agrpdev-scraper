@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 
 
-from utils.database import retrieve_articles
+from utils.database import retrieve_articles, retrieve_newest_articles
 from utils.utils import find_words, retrieve_all_articles
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ def home():
 def grab_newest_articles():
     articles_count = int(request.args.get("len"))
 
-    return jsonify(retrieve_articles(articles_count))
+    return jsonify(retrieve_newest_articles(articles_count))
 
 
 @app.route('/grab_longest_words', methods=['GET'])

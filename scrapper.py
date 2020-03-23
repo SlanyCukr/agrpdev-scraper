@@ -1,7 +1,7 @@
 import scrapy
 import time
 
-from utils.parsers import parse_article_id_url, parse_all_urls, parse_additional_data
+from utils.parsers import parse_article_id_url, parse_all_urls, parse_additional_data, parse_comments
 from utils.database import insert_articles
 
 
@@ -13,7 +13,7 @@ class AgrpSpider(scrapy.Spider):
 
     # disable filtering of duplicate pages (it is needed when correcting errors of accessing websites)
     custom_settings = {
-        'DEPTH_LIMIT': 2,
+        'DEPTH_LIMIT': 3,
         'DUPEFILTER_CLASS': 'scrapy.dupefilters.BaseDupeFilter'
     }
 
@@ -23,7 +23,6 @@ class AgrpSpider(scrapy.Spider):
         for article in self.articles:
             if not article.is_populated():
                 self.logger.error(f"Article with link {article.link} is not populated. It can't be resolved here.")
-            self.logger.info(str(article))
 
         insert_articles(self.articles)
 
@@ -51,11 +50,15 @@ class AgrpSpider(scrapy.Spider):
         """
         parse_all_urls(response, self.articles, self.url_limit)
 
-        # retrieve additional data from urls
+        # retrieve additional data from articles
         for article in self.articles:
             if not article.is_populated():
                 yield scrapy.Request(article.link, callback=parse_additional_data, errback=self.errback_httpbin,
                                      dont_filter=True, meta={'article_object': article, 'articles': self.articles, 'date_limit': self.date_limit})
+
+        # retrieve comments from articles
+        for article in self.articles:
+            yield scrapy.Request(article.comment_link, callback=parse_comments, errback=self.errback_httpbin, dont_filter=True, meta={'article_object': article})
 
     def errback_httpbin(self, failure):
         """
@@ -69,7 +72,7 @@ class AgrpSpider(scrapy.Spider):
         # retrieve url - using try-except block, because we can't tell where url is
         url = ""
         try:
-            url = failure.value.response
+            url = failure.value.response.url
         except:
             url = failure.request.url
 
@@ -78,5 +81,9 @@ class AgrpSpider(scrapy.Spider):
 
         self.logger.debug(f"Trying to access website {url} again.")
 
-        yield scrapy.Request(url, callback=parse_additional_data, errback=self.errback_httpbin,
-                             meta={'article_object': next((x for x in self.articles if x.link == url), None), 'articles': self.articles, 'date_limit': self.date_limit})
+        if url.split('/')[-1].isdigit():
+            yield scrapy.Request(url, callback=parse_comments, errback=self.errback_httpbin,
+                                 meta={'article_object': next((x for x in self.articles if x.comment_link == url), None)})
+        else:
+            yield scrapy.Request(url, callback=parse_additional_data, errback=self.errback_httpbin,
+                                 meta={'article_object': next((x for x in self.articles if x.link == url), None), 'articles': self.articles, 'date_limit': self.date_limit})

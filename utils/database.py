@@ -11,11 +11,13 @@ def insert_articles(articles):
     :param articles: Articles as ArticleInfo object
     :return: None
     """
-    # find if article is not already in the database, if yes, skip it
+    # find if article is not already in the database, if yes, update it
     for article in articles:
-        articles_in_db = col.find_one({"Link": article.link})
-        if not articles_in_db:
+        article_in_db = col.find_one({"Link": article.link})
+        if not article_in_db:
             col.insert_one(article.as_dict())
+        else:
+            col.update_one(article_in_db, {"$set": article.as_dict()})
 
 
 def retrieve_articles(articles_count):
@@ -24,6 +26,14 @@ def retrieve_articles(articles_count):
     :param articles_count: number of articles to be returned, 0 means all
     :return: Articles as list of dict
     """
-    articles = list(col.find(projection={"_id": 0}, limit=articles_count))
+    return list(col.find(projection={"_id": 0}, limit=articles_count))
 
-    return articles
+
+def retrieve_newest_articles(articles_count):
+    """
+    Return only n newest articles
+    :param articles_count: number of articles to be returned, 0 means all
+    :return: Articles as list of dict
+    """
+    col.sort({"Published_at": 1})
+    return list(col.find(col.find(projection={"_id": 0}), limit=articles_count))

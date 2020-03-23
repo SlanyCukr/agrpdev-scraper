@@ -1,8 +1,11 @@
 import re
+import json
+
+from classes.Comment import Comment
 
 
 class ArticleInfo:
-    def __init__(self, link, header="", description="", category="", author="", published_at="", modified_at="", paragraphs=""):
+    def __init__(self, link, header="", description="", category="", author="", published_at="", modified_at="", paragraphs="", comments=""):
         self.link = link
         self.header = header
         self.description = description
@@ -11,6 +14,8 @@ class ArticleInfo:
         self.published_at = published_at
         self.modified_at = modified_at
         self.paragraphs = paragraphs
+        self.comments = comments
+        self.comment_link = "https://www.novinky.cz/diskuze/" + ''.join(link.split('-')[-1:])
 
     def is_populated(self):
         if not self.header:
@@ -25,7 +30,7 @@ class ArticleInfo:
     def as_dict(self):
         return {'Link': self.link, 'Header': self.header, 'Description': self.description, 'Category': self.category,
                 'Author': self.author, 'Published_at': self.published_at, 'Modified_at': self.modified_at,
-                'Paragraphs': self.paragraphs, 'Paragraphs_count': len(self.paragraphs)}
+                'Paragraphs': self.paragraphs, 'Paragraphs_count': len(self.paragraphs), 'Comments': json.dumps(Comment.as_dicts(self.comments), ensure_ascii=False)}
 
     def words_in_all_paragraphs(self):
         """
