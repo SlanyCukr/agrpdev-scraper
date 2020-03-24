@@ -113,6 +113,6 @@ def grab_best_comments():
 
     # finds all comments and sorts them
     comments = find_comments(articles)
-    sorted_comments = sorted(comments, key=lambda obj: obj.ratio, reverse=True)
+    sorted_comments = sorted(comments, key=lambda obj: (obj.ratio, obj.likes), reverse=True)
 
     return jsonify(Comment.as_dicts(sorted_comments[:comment_count]))
