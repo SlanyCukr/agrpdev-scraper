@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 
 
 from utils.database import retrieve_newest_articles
-from utils.utils import find_words, retrieve_all_articles, find_comments
+from utils.utils import find_words, find_comments
 from classes.Comment import Comment
 
 app = Flask(__name__)
@@ -27,7 +27,12 @@ def grab_newest_articles():
     if 'len' in request.args:
         articles_count = int(request.args.get("len"))
 
-    return jsonify(retrieve_newest_articles(articles_count))
+    articles = retrieve_newest_articles()[:articles_count]
+    articles_for_return = []
+    for article in articles:
+        articles_for_return.append(article.as_dict())
+
+    return jsonify(articles_for_return)
 
 
 @app.route('/grab_longest_words', methods=['GET'])
@@ -36,8 +41,7 @@ def grab_longest_words():
     if 'len' in request.args:
         words_count = int(request.args.get("len"))
 
-    articles = retrieve_all_articles()
-
+    articles = retrieve_newest_articles()
     # finds all words in all paragraphs and sorts them based on their length
     unsorted_words = list(dict.fromkeys(find_words(articles)))
     sorted_words = sorted(unsorted_words, key=len)
@@ -51,11 +55,11 @@ def grab_most_common_words():
     if 'len' in request.args:
         words_count = int(request.args.get("len"))
 
-    word_len = 5
-    if 'word_len' in request.args   :
+    word_len = 10
+    if 'word_len' in request.args:
         word_len = int(request.args.get("word_len"))
 
-    articles = retrieve_all_articles()
+    articles = retrieve_newest_articles()
 
     # find all words in all articles paragraphs, discard short ones
     unsorted_words = find_words(articles)
@@ -78,7 +82,7 @@ def grab_most_common_words():
 
 @app.route('/covid_analysis', methods=['GET'])
 def covid_analysis():
-    articles = retrieve_all_articles()
+    articles = retrieve_newest_articles()
 
     covid_keywords = ["krize", "zdravotnictví", "nemocnice", "roušek", "rouška", "rouškou", "rouška",
                       "covid-19", "koronavirus", "respirátor", "respirátorů", "karanténa", "karanténu",
@@ -109,7 +113,7 @@ def grab_best_comments():
     if 'len' in request.args:
         comment_count = int(request.args.get("len"))
 
-    articles = retrieve_all_articles()
+    articles = retrieve_newest_articles()
 
     # finds all comments and sorts them
     comments = find_comments(articles)

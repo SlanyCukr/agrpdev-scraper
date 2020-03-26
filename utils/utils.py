@@ -1,7 +1,3 @@
-from classes.ArticleInfo import ArticleInfo
-from utils.database import retrieve_articles
-
-
 def can_add_url(articles, url_limit, url=""):
     """
     Checks if url can be added. (if url_limit is not exceeded and if url points to article)
@@ -37,12 +33,3 @@ def find_comments(articles):
     for article in articles:
         comments.extend(article.comments)
     return comments
-
-
-def retrieve_all_articles():
-    """
-    Retrieves all articles and converts them to ArticleInfo objects in list
-    :return: List of ArticleInfo instances
-    """
-    articles_db = retrieve_articles(0)
-    return ArticleInfo.db_objects_to_articles(articles_db)
