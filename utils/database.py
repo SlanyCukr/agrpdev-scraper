@@ -1,7 +1,6 @@
 from classes.ArticleInfo import ArticleInfo
 
 import pymongo
-import timeit
 
 client = pymongo.MongoClient("mongodb+srv://agrpdev_admin:iTDfSH14l4UA4mAf@arpdev-07wfo.mongodb.net/test?retryWrites=true&w=majority")
 db = client.agrpdev
@@ -52,16 +51,10 @@ def retrieve_newest_articles():
     :param articles_count: number of articles to be returned, 0 means all
     :return: Articles as list of dict
     """
-    start = timeit.default_timer()
     global cached_articles
     if len(cached_articles) == 0:
         cached_articles = load_to_cache()
     else:
         update_cache()
-    stop = timeit.default_timer()
-
-    file1 = open("times.txt", "a")
-    file1.write(f"Runtime: {stop - start}.")
-    file1.close()
 
     return cached_articles

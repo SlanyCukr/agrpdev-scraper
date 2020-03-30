@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
-
+from collections import Counter
 
 from utils.database import retrieve_newest_articles
-from utils.utils import find_words, find_comments
 from classes.Comment import Comment
+from classes.ArticleInfo import ArticleInfo
 
 app = Flask(__name__)
 
@@ -43,7 +43,7 @@ def grab_longest_words():
 
     articles = retrieve_newest_articles()
     # finds all words in all paragraphs and sorts them based on their length
-    unsorted_words = list(dict.fromkeys(find_words(articles)))
+    unsorted_words = list(dict.fromkeys(ArticleInfo.find_words(articles)))
     sorted_words = sorted(unsorted_words, key=len)
 
     return jsonify(sorted_words[-words_count:])
@@ -62,22 +62,16 @@ def grab_most_common_words():
     articles = retrieve_newest_articles()
 
     # find all words in all articles paragraphs, discard short ones
-    unsorted_words = find_words(articles)
+    unsorted_words = ArticleInfo.find_words(articles)
     unsorted_words = list(filter(lambda x: len(x) >= word_len, unsorted_words))
 
-    # fills counted_words list with tuples => ("word", occurrence_count)
-    counted_words = []
-    while len(unsorted_words) != 0:
-        word = unsorted_words[0]
-        occurrence_count = unsorted_words.count(word)
-        counted_words.append((word, occurrence_count))
-
-        unsorted_words = list(filter(lambda x: x != word, unsorted_words))
+    occurrence_count = Counter(unsorted_words)
+    counted_words_sorted = occurrence_count.most_common(words_count)
 
     # sorts this list by occurrence_count
-    counted_words_sorted = sorted(counted_words, key=lambda tup: tup[1])
+    counted_words_sorted = sorted(counted_words_sorted, key=lambda tup: tup[1])
 
-    return jsonify(counted_words_sorted[-words_count:])
+    return jsonify(counted_words_sorted)
 
 
 @app.route('/covid_analysis', methods=['GET'])
@@ -116,7 +110,7 @@ def grab_best_comments():
     articles = retrieve_newest_articles()
 
     # finds all comments and sorts them
-    comments = find_comments(articles)
+    comments = Comment.find_comments(articles)
     sorted_comments = sorted(comments, key=lambda obj: (obj.ratio, obj.likes), reverse=True)
 
     return jsonify(Comment.as_dicts(sorted_comments[:comment_count]))

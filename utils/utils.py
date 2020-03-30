@@ -9,27 +9,3 @@ def can_add_url(articles, url_limit, url=""):
     if len(articles) < int(url_limit) and 'timeline-stalose-lastItem' not in url:
         return True
     return False
-
-
-def find_words(articles):
-    """
-    Finds all words in all articles
-    :param articles: Articles as ArticleInfo objects
-    :return: List of all words
-    """
-    words = []
-    for article in articles:
-        words.extend(article.words_in_all_paragraphs())
-
-    return words
-
-
-def find_comments(articles):
-    """
-    Finds all comments in all articles
-    :return: list of all comments
-    """
-    comments = []
-    for article in articles:
-        comments.extend(article.comments)
-    return comments

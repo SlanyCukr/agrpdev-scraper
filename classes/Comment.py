@@ -19,3 +19,14 @@ class Comment:
         for comment in comments:
             dicts.append(comment.as_dict())
         return dicts
+
+    @staticmethod
+    def find_comments(articles):
+        """
+        Finds all comments in all articles
+        :return: list of all comments
+        """
+        comments = []
+        for article in articles:
+            comments.extend(article.comments)
+        return comments

@@ -70,3 +70,16 @@ class ArticleInfo:
                                         db_object["Category"], db_object["Author"], db_object["Published_at"],
                                         db_object["Modified_at"], db_object["Paragraphs"], comments))
         return articles
+
+    @staticmethod
+    def find_words(articles):
+        """
+        Finds all words in all articles
+        :param articles: Articles as ArticleInfo objects
+        :return: List of all words
+        """
+        words = []
+        for article in articles:
+            words.extend(article.words_in_all_paragraphs())
+
+        return words
